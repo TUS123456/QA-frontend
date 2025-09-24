@@ -9,7 +9,7 @@ import {
   useDisclosure,
   Spinner,
 } from "@chakra-ui/react";
-import { AddIcon, DeleteIcon, AttachmentIcon } from "@chakra-ui/icons";
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 
 export type DocumentItem = {
   id: string;

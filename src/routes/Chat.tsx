@@ -1,17 +1,8 @@
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useCallback,
-  Fragment,
-} from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useAuth } from "../state/AuthContext";
-import { api, API_BASE } from "../lib/api";
+import { api } from "../lib/api";
 import {
   Button,
-  Spinner,
   useToast,
   AlertDialog,
   AlertDialogBody,
@@ -28,13 +19,11 @@ import {
 } from "@chakra-ui/react";
 import {
   ArrowForwardIcon,
-  AddIcon,
-  AttachmentIcon,
   DeleteIcon,
   SearchIcon,
-  EditIcon,
   CheckIcon,
   CloseIcon,
+  EditIcon,
 } from "@chakra-ui/icons";
 import axios from "axios";
 import Sidebar from "../component/sideBar";
@@ -55,26 +44,26 @@ type DocumentItem = {
   uploadedAt?: string;
 };
 
-function useChatStorage(conversationId: string) {
-  const key = `chat_${conversationId}`;
-  const read = useCallback((): ChatMessage[] => {
-    try {
-      const raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  }, [key]);
+// function useChatStorage(conversationId: string) {
+//   const key = `chat_${conversationId}`;
+//   const read = useCallback((): ChatMessage[] => {
+//     try {
+//       const raw = localStorage.getItem(key);
+//       return raw ? JSON.parse(raw) : [];
+//     } catch {
+//       return [];
+//     }
+//   }, [key]);
 
-  const write = useCallback(
-    (messages: ChatMessage[]) => {
-      localStorage.setItem(key, JSON.stringify(messages));
-    },
-    [key]
-  );
+//   const write = useCallback(
+//     (messages: ChatMessage[]) => {
+//       localStorage.setItem(key, JSON.stringify(messages));
+//     },
+//     [key]
+//   );
 
-  return { read, write };
-}
+//   return { read, write };
+// }
 
 function useDebounce(value: string, delay: number) {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -235,150 +224,149 @@ const MessageItem = ({
 };
 
 // Extracted DocumentSelector component
-const DocumentSelector = ({
-  documents,
-  docId,
-  setDocId,
-  pdfFile,
-  setPdfFile,
-  uploadPdf,
-  loading,
-  deleteDocument,
-}: {
-  documents: DocumentItem[];
-  docId: string;
-  setDocId: (id: string) => void;
-  pdfFile: File | null;
-  setPdfFile: (file: File | null) => void;
-  uploadPdf: () => void;
-  loading: boolean;
-  deleteDocument: (id: string) => void;
-}) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedDocId, setSelectedDocId] = useState<string>("");
-  const cancelRef = useRef<HTMLButtonElement>(null);
+// const DocumentSelector = ({
+//   documents,
+//   docId,
+//   setDocId,
+//   pdfFile,
+//   setPdfFile,
+//   uploadPdf,
+//   loading,
+//   deleteDocument,
+// }: {
+//   documents: DocumentItem[];
+//   docId: string;
+//   setDocId: (id: string) => void;
+//   pdfFile: File | null;
+//   setPdfFile: (file: File | null) => void;
+//   uploadPdf: () => void;
+//   loading: boolean;
+//   deleteDocument: (id: string) => void;
+// }) => {
+//   const { isOpen, onOpen, onClose } = useDisclosure();
+//   const [selectedDocId, setSelectedDocId] = useState<string>("");
+//   const cancelRef = useRef<HTMLButtonElement>(null);
 
-  const handleDeleteClick = (id: string) => {
-    setSelectedDocId(id);
-    onOpen();
-  };
+//   const handleDeleteClick = (id: string) => {
+//     setSelectedDocId(id);
+//     onOpen();
+//   };
 
-  const confirmDelete = () => {
-    deleteDocument(selectedDocId);
-    onClose();
-  };
+//   const confirmDelete = () => {
+//     deleteDocument(selectedDocId);
+//     onClose();
+//   };
 
-  return (
-    <div className="bg-white rounded-xl shadow-md p-4 mb-6">
-      <h2 className="text-lg font-semibold text-gray-800 mb-3">
-        Select Document
-      </h2>
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="flex-1 relative">
-          <select
-            value={docId}
-            onChange={(e) => setDocId(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none"
-            aria-label="Select a PDF document"
-          >
-            <option value="">Choose a PDF document...</option>
-            {documents.map((doc) => (
-              <option key={doc.id} value={doc.id}>
-                {doc.originalName}
-              </option>
-            ))}
-          </select>
-          {documents.length > 0 && (
-            <div className="absolute inset-y-0 right-8 flex items-center pr-2 pointer-events-none">
-              <AttachmentIcon color="gray.400" />
-            </div>
-          )}
-          {docId && (
-            <IconButton
-              aria-label="Delete document"
-              icon={<DeleteIcon />}
-              size="sm"
-              variant="ghost"
-              colorScheme="red"
-              position="absolute"
-              right="2"
-              top="50%"
-              transform="translateY(-50%)"
-              onClick={() => handleDeleteClick(docId)}
-            />
-          )}
-        </div>
+//   return (
+//     <div className="bg-white rounded-xl shadow-md p-4 mb-6">
+//       <h2 className="text-lg font-semibold text-gray-800 mb-3">
+//         Select Document
+//       </h2>
+//       <div className="flex flex-col sm:flex-row gap-3">
+//         <div className="flex-1 relative">
+//           <select
+//             value={docId}
+//             onChange={(e) => setDocId(e.target.value)}
+//             className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none"
+//             aria-label="Select a PDF document"
+//           >
+//             <option value="">Choose a PDF document...</option>
+//             {documents.map((doc) => (
+//               <option key={doc.id} value={doc.id}>
+//                 {doc.originalName}
+//               </option>
+//             ))}
+//           </select>
+//           {documents.length > 0 && (
+//             <div className="absolute inset-y-0 right-8 flex items-center pr-2 pointer-events-none">
+//               <AttachmentIcon color="gray.400" />
+//             </div>
+//           )}
+//           {docId && (
+//             <IconButton
+//               aria-label="Delete document"
+//               icon={<DeleteIcon />}
+//               size="sm"
+//               variant="ghost"
+//               colorScheme="red"
+//               position="absolute"
+//               right="2"
+//               top="50%"
+//               transform="translateY(-50%)"
+//               onClick={() => handleDeleteClick(docId)}
+//             />
+//           )}
+//         </div>
 
-        <div className="flex gap-2">
-          <label className="flex-1 cursor-pointer">
-            <div className="flex items-center justify-center gap-2 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50 transition-colors">
-              <AddIcon className="text-gray-500" />
-              <span className="text-gray-700">Choose PDF</span>
-            </div>
-            <input
-              type="file"
-              accept="application/pdf"
-              onChange={(e) => {
-                if (e.target.files && e.target.files.length > 0)
-                  setPdfFile(e.target.files[0]);
-              }}
-              className="hidden"
-              aria-label="Upload PDF file"
-            />
-          </label>
+//         <div className="flex gap-2">
+//           <label className="flex-1 cursor-pointer">
+//             <div className="flex items-center justify-center gap-2 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50 transition-colors">
+//               <AddIcon className="text-gray-500" />
+//               <span className="text-gray-700">Choose PDF</span>
+//             </div>
+//             <input
+//               type="file"
+//               accept="application/pdf"
+//               onChange={(e) => {
+//                 if (e.target.files && e.target.files.length > 0)
+//                   setPdfFile(e.target.files[0]);
+//               }}
+//               className="hidden"
+//               aria-label="Upload PDF file"
+//             />
+//           </label>
 
-          <Button
-            onClick={uploadPdf}
-            isDisabled={!pdfFile}
-            isLoading={loading}
-            colorScheme="purple"
-            className="px-4 py-2 rounded-lg"
-            leftIcon={<AddIcon />}
-          >
-            Upload
-          </Button>
-        </div>
-      </div>
+//           <Button
+//             onClick={uploadPdf}
+//             isDisabled={!pdfFile}
+//             isLoading={loading}
+//             colorScheme="purple"
+//             className="px-4 py-2 rounded-lg"
+//             leftIcon={<AddIcon />}
+//           >
+//             Upload
+//           </Button>
+//         </div>
+//       </div>
 
-      {pdfFile && (
-        <div className="mt-3 text-sm text-gray-600 flex items-center">
-          <AttachmentIcon className="h-4 w-4 mr-1 text-indigo-600" />
-          {pdfFile.name}
-        </div>
-      )}
+//       {pdfFile && (
+//         <div className="mt-3 text-sm text-gray-600 flex items-center">
+//           <AttachmentIcon className="h-4 w-4 mr-1 text-indigo-600" />
+//           {pdfFile.name}
+//         </div>
+//       )}
 
-      <AlertDialog
-        isOpen={isOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={onClose}
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete Document
-            </AlertDialogHeader>
-            <AlertDialogBody>
-              Are you sure you want to delete this document? This will also
-              remove all associated chat history.
-            </AlertDialogBody>
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onClose}>
-                Cancel
-              </Button>
-              <Button colorScheme="red" onClick={confirmDelete} ml={3}>
-                Delete
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
-    </div>
-  );
-};
+//       <AlertDialog
+//         isOpen={isOpen}
+//         leastDestructiveRef={cancelRef}
+//         onClose={onClose}
+//       >
+//         <AlertDialogOverlay>
+//           <AlertDialogContent>
+//             <AlertDialogHeader fontSize="lg" fontWeight="bold">
+//               Delete Document
+//             </AlertDialogHeader>
+//             <AlertDialogBody>
+//               Are you sure you want to delete this document? This will also
+//               remove all associated chat history.
+//             </AlertDialogBody>
+//             <AlertDialogFooter>
+//               <Button ref={cancelRef} onClick={onClose}>
+//                 Cancel
+//               </Button>
+//               <Button colorScheme="red" onClick={confirmDelete} ml={3}>
+//                 Delete
+//               </Button>
+//             </AlertDialogFooter>
+//           </AlertDialogContent>
+//         </AlertDialogOverlay>
+//       </AlertDialog>
+//     </div>
+//   );
+// };
 
 export default function Chat() {
   const { user, token } = useAuth();
-  const navigate = useNavigate();
   const toast = useToast();
   const conversationId = useMemo(() => user?.id ?? "guest", [user]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -393,7 +381,6 @@ export default function Chat() {
   const endRef = useRef<HTMLDivElement | null>(null);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
-
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
