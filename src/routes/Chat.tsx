@@ -402,6 +402,8 @@ export default function Chat() {
 
   const fetchDocuments = useCallback(async () => {
     try {
+
+      console.log("fetchDocuments")
       setDocLoading(true);
       const res = await api.get<DocumentItem[]>("/documents", {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
@@ -451,18 +453,18 @@ export default function Chat() {
     setMessages((m) => [...m, userMsg]);
     setInput("");
 
-    await axios.post(
-      "http://localhost:4000/api/message/store-message",
-      {
-        user,
-        conversationId,
-        docId,
-        role: "user",
-        content: userMsg.content,
-        ts: userMsg.ts,
-      },
-      { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
-    );
+    // await axios.post(
+    //   "http://localhost:4000/api/message/store-message",
+    //   {
+    //     user,
+    //     conversationId,
+    //     docId,
+    //     role: "user",
+    //     content: userMsg.content,
+    //     ts: userMsg.ts,
+    //   },
+    //   { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
+    // );
 
     try {
       setLoading(true);
