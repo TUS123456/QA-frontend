@@ -23,57 +23,41 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-const TOKEN_KEY = "app_token";
-const USER_KEY = "app_user";
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // restore from localStorage ONCE
+  // ✅ On first load — don’t restore from localStorage, just finish loading
   useEffect(() => {
-    const storedToken = localStorage.getItem(TOKEN_KEY);
-    const storedUser = localStorage.getItem(USER_KEY);
-    if (storedToken && storedUser) {
-      try {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
-      } catch {
-        // ignore parse errors
-      }
-    }
-    setLoading(false); // ✅ end loading
+    setLoading(false);
   }, []);
 
+  // ✅ LOGIN
   const login = useCallback(async (email: string, password: string) => {
     const res = await loginUser({ email, password });
     const { token: tkn, user: usr } = res;
 
-    localStorage.setItem(TOKEN_KEY, tkn);
-    localStorage.setItem(USER_KEY, JSON.stringify(usr));
-
+    // ❌ no localStorage persistence here
     setToken(tkn);
     setUser(usr);
   }, []);
 
+  // ✅ SIGNUP
   const signup = useCallback(
     async (name: string, email: string, password: string) => {
       const res = await signupUser({ name, email, password });
       const { token: tkn, user: usr } = res;
 
-      localStorage.setItem(TOKEN_KEY, tkn);
-      localStorage.setItem(USER_KEY, JSON.stringify(usr));
-
+      // ❌ no localStorage persistence here
       setToken(tkn);
       setUser(usr);
     },
     []
   );
 
+  // ✅ LOGOUT
   const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
     setToken(null);
     setUser(null);
   }, []);

@@ -20,7 +20,7 @@ import {
 } from "../component/ui/password-input";
 
 export default function Signup() {
-  const { signup , setUser } = useAuth();
+  const { signup } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");

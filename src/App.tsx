@@ -12,7 +12,8 @@ type Doc = {
   size: number;
 };
 
-const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+const API_BASE =
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:4000/api";
 
 function App() {
   const [docs, setDocs] = useState<Doc[]>([]);
@@ -126,7 +127,7 @@ function App() {
 
         {!user ? (
           // 🚀 Landing view if user not logged in
-          <section className="bg-white rounded-lg shadow p-10 text-center space-y-6">
+          <section className="bg-white rounded-lg shadow p-8 text-center space-y-10">
             <h2 className="text-2xl font-bold">Welcome to PDF QA System</h2>
             <p className="text-slate-600">
               Upload PDFs, ask questions, and chat with your documents — but
